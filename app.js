@@ -9,6 +9,11 @@ const cartTotal = document.querySelector('.cart-total');
 const cartContent = document.querySelector('.cart-content');
 const productsDOM = document.querySelector('.products-center');
 
+//Para añadir los productos al carrito no puedo hacer esto porque estoy seleccionando
+//los botones antes de que los productos se carguen. Tendrá que ser más abajo.
+//const btns = document.querySelectorAll('.bag-btn');
+//console.log(btns);
+
 // cart 
 let cart = []
 
@@ -58,18 +63,50 @@ class UI {
         // innerHTML para modificar el contenido HTML de esa etiqueta (.products-center)
         productsDOM.innerHTML = result;
     }
+    getBagButtons(){
+        // también podríamos haber usado la NodeList, pero el spread operator es más cómodo
+        const btns = [...document.querySelectorAll(".bag-btn")];
+        btns.forEach(button=>{
+            // para saber el id del producto
+            let id = button.dataset.id;
+            // para saber si el producto está en el carro
+            let inCart = cart.find(item => item.id === id);
+            // si el item ya está en el carro deshabilitamos el boton
+            if(inCart){
+                button.innerText = "In Cart";
+                button.disabled = true;
+            } 
+            else {
+                button.addEventListener('click', (event)=>{
+                    console.log(event);
+                })
+            }
+        })
+    }
 }
 
 // local storage
 class Storage {
-
+    //static implica que no necesitas crear una instancia para usarlo
+    static saveProducts(products){
+        localStorage.setItem("products", JSON.stringify(products));
+    }
 }
 
 // event listener
+//DOMContentLoaded event fires cuando el documento HTML inicial ha sido completamente cargado y parseado
+//sin esperar a stylesheets, imágenes y subframes 
+//DOMContentLoaded escucha cualquier evento que ocurra en la página cargada
 document.addEventListener("DOMContentLoaded", () => {
-    const ui = new UI()
+    const ui = new UI() //de la clase UI creada
     const products = new Products(); //de la clase Products creada
 
     //get all products
-    products.getProducts().then(products => ui.displayProducts(products));
+    //el then recibe una promesa y encadena un método/función
+    products.getProducts().then(products => {
+    ui.displayProducts(products)
+    Storage.saveProducts(products);
+    }).then(()=>{
+        ui.getBagButtons();
+    });
 });
