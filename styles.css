@@ -176,6 +176,8 @@ body {
   /* ---------------End of Products ---------------- */
 
   /* --------------- Cart ---------------- */
+
+  /* Cart overlay es la pelicula naranja que se pone sobre todo los elementos de la página */
 .cart-overlay {
     position: fixed;
     top: 0;
